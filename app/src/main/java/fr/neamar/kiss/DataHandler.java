@@ -508,7 +508,7 @@ public class DataHandler extends BroadcastReceiver
 
         // Ensure it's removed from favorites too
         DataHandler dataHandler = KissApplication.getApplication(context).getDataHandler();
-        dataHandler.removeFromFavorites(context, app.id);
+        dataHandler.removeFromFavorites(app.id);
     }
 
     public void removeFromExcluded(AppPojo app) {
@@ -689,7 +689,7 @@ public class DataHandler extends BroadcastReceiver
             ((MainActivity) context).onFavoriteChange();
     }
 
-    public void removeFromFavorites(Context context, String id) {
+    public void removeFromFavorites(String id) {
 
         String favApps = PreferenceManager.getDefaultSharedPreferences(context).
                 getString("favorite-apps-list", "");
@@ -703,9 +703,6 @@ public class DataHandler extends BroadcastReceiver
 
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .putString("favorite-apps-list", favApps.replace(id + ";", "")).apply();
-
-        if (context instanceof MainActivity)
-            ((MainActivity) context).onFavoriteChange();
     }
 
     @SuppressWarnings("StringSplitter")

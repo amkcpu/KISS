@@ -383,12 +383,12 @@ public class SettingsActivity extends PreferenceActivity implements
             QuerySearcher.clearMaxResultCountCache();
         } else if ("pref-fav-tags-list".equals(key)) {
             // after we edit the fav tags list update DataHandler
-            Set<String> favTags = sharedPreferences.getStringSet(key, Collections.<String>emptySet());
+            Set<String> favTags = sharedPreferences.getStringSet(key, Collections.emptySet());
             DataHandler dh = KissApplication.getApplication(this).getDataHandler();
             ArrayList<Pojo> favoritesPojo = dh.getFavorites();
             for (Pojo pojo : favoritesPojo)
                 if (pojo instanceof TagDummyPojo && !favTags.contains(pojo.getName()))
-                    dh.removeFromFavorites(this, pojo.id);
+                    dh.removeFromFavorites(pojo.id);
             for (String tagName : favTags)
                 dh.addToFavorites(this, TagsProvider.generateUniqueId(tagName));
         }
