@@ -33,7 +33,9 @@ import androidx.annotation.NonNull;
 import fr.neamar.kiss.KissApplication;
 import fr.neamar.kiss.MainActivity;
 import fr.neamar.kiss.R;
+import fr.neamar.kiss.UIColors;
 import fr.neamar.kiss.adapter.RecordAdapter;
+import fr.neamar.kiss.notification.NotificationListener;
 import fr.neamar.kiss.pojo.AppPojo;
 import fr.neamar.kiss.ui.GoogleCalendarIcon;
 import fr.neamar.kiss.ui.ListPopup;
@@ -86,7 +88,22 @@ public class AppResult extends Result {
         } else {
             appIcon.setImageDrawable(null);
         }
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            SharedPreferences notificationPrefs = context.getSharedPreferences(NotificationListener.NOTIFICATION_PREFERENCES_NAME, Context.MODE_PRIVATE);
+            ImageView notificationView = view.findViewById(R.id.item_notification_dot);
+            notificationView.setVisibility(notificationPrefs.contains(getPackageName()) ? View.VISIBLE : View.GONE);
+            notificationView.setTag(getPackageName());
+
+            int primaryColor = UIColors.getPrimaryColor(context);
+            notificationView.setColorFilter(primaryColor);
+        }
+
         return view;
+    }
+
+    public String getPackageName() {
+        return appPojo.packageName;
     }
 
     @Override
@@ -193,9 +210,8 @@ public class AppResult extends Result {
 
     private void excludeFromKiss(Context context, AppPojo appPojo) {
         KissApplication.getApplication(context).getDataHandler().addToExcluded(appPojo);
-        //remove app pojo from appProvider results - no need to reset handler
-        KissApplication.getApplication(context).getDataHandler().getAppProvider().removeApp(appPojo);
-        KissApplication.getApplication(context).getDataHandler().removeFromFavorites((MainActivity) context, appPojo.id);
+        // In case the newly excluded app was in a favorite, refresh them
+        ((MainActivity) context).onFavoriteChange();
         Toast.makeText(context, R.string.excluded_app_list_added, Toast.LENGTH_LONG).show();
     }
 
